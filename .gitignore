@@ -1,5 +1,0 @@
-lib/db_credentials.php
-*.exe
-db_credentials.php
-*.log
-log/*
