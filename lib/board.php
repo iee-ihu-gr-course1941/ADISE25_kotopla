@@ -9,7 +9,7 @@ function show_board() {
 	header('Content-type: application/json'); //επιστρεφουμε JSON
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 }
-// reset board function
+// καθαρισμος του board και επανεκκινηση
 function reset_board() {
 	global $mysqli;
 	
