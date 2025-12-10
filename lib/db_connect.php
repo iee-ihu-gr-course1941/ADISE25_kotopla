@@ -8,7 +8,7 @@ $dbpassword=$DB_PASS;
 
 //$mysqli = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-// ελεγχος συνδεσης με την βαση μας
+/// ελεγχος συνδεσης με την βαση μας
 /*
 if ($conn->connect_error) {
     echo json_encode(["success" => false, "message" => "Σφάλμα σύνδεσης με τη βάση δεδομένων."]);
