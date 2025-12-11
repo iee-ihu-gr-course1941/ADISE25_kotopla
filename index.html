@@ -1,74 +1,31 @@
 <!DOCTYPE html>
-<html lang="el">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Πίνακας 30x15</title>
-    <style>
-        table {
-            border-collapse: collapse;
-        }
-        td {
-            width: 1em;
-            height: 1em;
-            border: 1px solid black;
-        }
-    </style>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>ΤΑΒΛΙ ΠΛΑΚΩΤΟ</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
+  <link href="css/plakwto.css" rel="stylesheet">
+  <script src="bootstrap/jquery-3.2.1.min.js"></script>
+  <script src="bootstrap/bootstrap.min.js"></script>
+  <script src="js/plakwto.js"></script>
+
 </head>
 <body>
 
-<h2>Πίνακας 30 x 15</h2>
-<div id="container"></div>
+<h1>ΤΑΜΠΛΟ ΤΑΒΛΙ</h1>
+<div id="board">
 
-<script>
-    
-    // Δημιουργία table
-    const rows = 30;
-    const cols = 12;
+</div>
 
-    const container = document.getElementById("container");
-    const table = document.createElement("table");
-
-    // Γέμισμα πίνακα
-    for (let r = 0; r < rows; r++) {
-        const tr = document.createElement("tr");
-
-        for (let c = 0; c < cols; c++) {
-            const td = document.createElement("td");
-            if(r<15 && c==11){
-            td.style.backgroundColor =td.style.background ? "" : "red";
-            }
-            if(r>14 && c==11){
-            td.style.backgroundColor =td.style.background ? "" : "purple";
-            }
-
-            // Προαιρετικά: toggle χρώματος με κλικ
-            td.addEventListener("click", () => {
-                td.style.background = td.style.background ? "" : "blue";
-            });
-
-            tr.appendChild(td);
-        }
-        table.appendChild(tr);
-    }
-
-    container.appendChild(table);
-</script>
 
 </body>
 </html>
-<script>
-        function draw_empty_board() {
-	for(var i=1;i<31;i++) {
-		t += '<tr>';
-		for(var j=1;j<16;j++) {
-			t += '<td class="chess_square" id="square_'+j+'_'+i+'">' + j +','+i+'</td>'; 
-		}
-		t+='</tr>';
-	}
-	t+='</table>';
-	
-	$('#chess_board').html(t);
-	$('.chess_square').click(click_on_piece);
-}
 
-    </script>

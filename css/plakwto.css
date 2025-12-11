@@ -1,0 +1,13 @@
+h1{
+    margin-left: 35%;
+}
+#board_table td {width: 3em; height:2.3em;
+    border:1px solid black;text-align:center;
+    }
+#board_table {
+    margin-left: 30%;
+    border-collapse: collapse;
+background-color: rgb(98, 67, 29);}
+
+
+IMG.piece {width: 2.5em; height:2.5em;}

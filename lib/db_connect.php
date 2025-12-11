@@ -2,7 +2,7 @@
 require_once "db_credentials.php";
 // συνδεση με βαση δεδομενων
 $servername = "localhost";
-$dbname = "tavli";
+$dbname = "user_info_db";
 $dbusername=$DB_USER;
 $dbpassword=$DB_PASS;
 
@@ -21,6 +21,7 @@ if(gethostname()=='users.iee.ihu.gr') {
 } else {
 		//$pass=null;
     $mysqli = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+    
 }
 
 if ($mysqli->connect_errno) {
