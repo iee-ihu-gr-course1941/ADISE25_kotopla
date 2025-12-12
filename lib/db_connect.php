@@ -2,7 +2,7 @@
 require_once "db_credentials.php";
 // συνδεση με βαση δεδομενων
 $servername = "localhost";
-$dbname = "user_info_db";
+$dbname = "tavli";
 $dbusername=$DB_USER;
 $dbpassword=$DB_PASS;
 
