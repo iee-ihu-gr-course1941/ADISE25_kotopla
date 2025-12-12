@@ -1,6 +1,8 @@
 <?php 
 require_once "lib/board.php";
 require_once "lib/db_connect.php";
+require_once "lib/game.php";
+require_once "lib/users.php";
 
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -40,15 +42,6 @@ function handle_board($method,$input){
     }
     }
 
-    function handle_status($method) {
-  if($method=='GET') {
-    show_status();
-  } else {
-    header('HTTP/1.1 405 Method Not Allowed');
-		print "<h1>Method Not Allowed (405)</h1>";
-	}
-}
-
 function handle_player($method, $p, $input) {
   switch ($b=array_shift($p)) {
 		case '':
@@ -65,4 +58,14 @@ function handle_player($method, $p, $input) {
 		  break;
 		}
 }
+
+    function handle_status($method) {
+  if($method=='GET') {
+    show_status();
+  } else {
+    header('HTTP/1.1 405 Method Not Allowed');
+		print "<h1>Method Not Allowed (405)</h1>";
+	}
+}
+
 ?>

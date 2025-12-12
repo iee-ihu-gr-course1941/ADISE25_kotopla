@@ -3,7 +3,7 @@
 
 	draw_empty_board();
 	fill_board();
-
+	$('#reset_board').click(reset_board());
   }
 	
 
@@ -51,6 +51,15 @@ function fill_board_by_data(data) {
             $(id).html(im);
         }
     }
+}
+
+function reset_board() {
+	$.ajax(
+		{method: 'post',
+		 url: "plakwto.php/board/", 
+		 success: fill_board_by_data 
+		}
+		);
 }
 
 
