@@ -4,6 +4,11 @@
 	draw_empty_board();
 	fill_board();
 	$('#reset_board').click(reset_board());
+	$('#btn').on('click', function (e) {
+        e.preventDefault();
+        set_user();
+		
+    });
   }
 	
 
@@ -61,6 +66,32 @@ function reset_board() {
 		}
 		);
 }
+
+function set_user(){
+	var username = $('#username_field').val();
+    var color = $("#color").val();
+	$.ajax(
+		{method: 'PUT',
+		 url: 'plakwto.php/players/'+color+'/',
+		 contentType: 'application/json',
+         dataType: 'json',
+		 data: JSON.stringify({
+            "username": username
+          }),
+		 success: function (response) {
+            console.log("OK", response);
+			$('#username_field').val('');
+			
+        },
+        error: function (xhr) {
+            console.log(xhr.responseText);
+			$('#username_field').val('');
+        }
+	 }
+		 
+		);
+}
+
 
 
   

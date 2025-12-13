@@ -30,8 +30,7 @@ function show_users() {
 	header('Content-type: application/json');
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 }
-function set_user($b,$input) {}
-/*
+
 function set_user($b,$input) {
     if(!isset($input['username']) || $input['username']=='') {
 		header("HTTP/1.1 400 Bad Request");
@@ -74,6 +73,5 @@ function set_user($b,$input) {
 	header('Content-type: application/json');
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 }
-*/
 
 ?>

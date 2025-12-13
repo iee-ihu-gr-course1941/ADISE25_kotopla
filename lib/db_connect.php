@@ -1,6 +1,6 @@
 <?php
 require_once "db_credentials.php";
-// συνδεση με βαση δεδομενων
+// Στοιχεια για την συνδεση με την βαση δεδομενων το username και password ειναι διαφορετικα τοπικα με το users
 $servername = "localhost";
 $dbname = "tavli";
 $dbusername=$DB_USER;
@@ -15,7 +15,7 @@ if ($conn->connect_error) {
     exit;
 }
 */
-
+// ελεγεχουμε αν η συνδεση με την βαση γινεται στο users η τοπικα
 if(gethostname()=='users.iee.ihu.gr') {
 	$mysqli = new mysqli($servername, $dbusername, $dbpassword, $dbname,null,'/home/student/iee/2019/iee2019160/mysql/run/mysql.sock');
 } else {

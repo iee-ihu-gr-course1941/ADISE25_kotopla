@@ -4,7 +4,7 @@ function show_board() {
 
 	$sql = 'select * from board';
 	$st = $mysqli->prepare($sql); //Αυτό βελτιώνει την ασφάλεια και την απόδοση.
-	$st->execute();
+	$st->execute();  
 	$res = $st->get_result();
 	header('Content-type: application/json'); //επιστρεφουμε JSON
 	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
