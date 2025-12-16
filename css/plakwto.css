@@ -1,13 +1,62 @@
 h1{
     margin-left: 35%;
 }
-#board_table td {width: 3em; height:2.3em;
-    border:1px solid black;text-align:center;
-    }
+
+/* =========================
+   BOARD TABLE
+   ========================= */
+
 #board_table {
-    margin-left: 30%;
+    margin: 20px auto;
     border-collapse: collapse;
-background-color: rgb(98, 67, 29);}
+    background-color: rgb(98, 67, 29);
+}
 
+/* =========================
+   STACK CELLS (2 x 12)
+   ========================= */
 
-IMG.piece {width: 2.5em; height:2.5em;}
+#board_table td {
+    width: 3.5em;
+    height: 18em;                 /* χώρος για 15 πούλια */
+    border: 1px solid black;
+    vertical-align: bottom;       /* τα πούλια κάθονται κάτω */
+    position: relative;
+    padding: 0;
+}
+#board_table tr:first-child td {
+    vertical-align: top;
+}
+#board_table tr:first-child img.piece {
+    margin: 0 auto -1.9em;
+}
+/* =========================
+   PIECES (STACKING)
+   ========================= */
+
+img.piece {
+    width: 2.8em;
+    height: 2.8em;
+    display: block;
+    margin: -1.9em auto 0;        /* overlap για στοίβα */
+    pointer-events: none;         /* για μελλοντικό drag */
+}
+
+/* =========================
+   OPTIONAL: VISUAL HELPERS
+   ========================= */
+
+/* hover σε στοίβα */
+#board_table td:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* πρώτη γραμμή (πάνω πλευρά) */
+#board_table tr:first-child td {
+    border-bottom-width: 3px;
+}
+
+/* δεύτερη γραμμή (κάτω πλευρά) */
+#board_table tr:last-child td {
+    border-top-width: 3px;
+}

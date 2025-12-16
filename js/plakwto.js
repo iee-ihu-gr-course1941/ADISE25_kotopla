@@ -3,66 +3,99 @@
 
 	draw_empty_board();
 	fill_board();
-	$('#reset_board').click(reset_board());
+
+	$('#reset_board').click(reset_board);
+
 	$('#btn').on('click', function (e) {
         e.preventDefault();
         set_user();
 		
     });
-  }
-	
+  });
 
-);
+/*
+function draw_empty_board() {
+    let t = '<table id="board_table">';
 
-function draw_empty_board(){
-	var t='<table id="board_table">';
-	for(var i=1;i<31;i++) {
-		t += '<tr>';
-		for(var j=1;j<13;j++) {
-			t += '<td class="board_square" id="square_'+i+'_'+j+'">' + i +','+j+'</td>'; 
-		}
-		t+='</tr>';
-	}
-	t+='</table>';
-	
-	$('#board').html(t);
+    for (let row = 1; row <= 2; row++) {
+        t += '<tr>';
+        for (let col = 1; col <= 12; col++) {
+            t += `
+              <td class="board_stack" 
+                  id="stack_${row}_${col}"
+                  data-row="${row}"
+                  data-col="${col}">
+              </td>`;
+        }
+        t += '</tr>';
+    }
+
+    t += '</table>';
+    $('#board').html(t);
+}
+*/
+function draw_empty_board() {
+    let t = '<table id="board_table">';
+
+    for (let r=1; r<=2; r++) {
+        t += '<tr>';
+        for (let c=1; c<=12; c++) {
+            t += `<td id="stack_${r}_${c}" class="board_stack"></td>`;
+        }
+        t += '</tr>';
+    }
+
+    t += '</table>';
+    $('#board').html(t);
 }
 
 function fill_board() {
-	$.ajax(
-		{	method: "get",
-			url: "plakwto.php/board/" ,
-		    dataType: "json",
- 
-		 	success: fill_board_by_data 
-		 
-		}
-	);
+    $.ajax({
+        method: "get",
+        url: "plakwto.php/board/",
+        dataType: "json",
+        success: fill_board_by_data
+    });
 }
+ 
 
+/*
 function fill_board_by_data(data) {
 
-    for (var i = 0; i < data.length; i++) {
-        var o = data[i];
-        var id = '#square_' + o.x + '_' + o.y;
-         
-		
-		//console.log(o.piece_color+".png");
+    $('.board_stack').empty();
 
-		 if (o.piece_color == 'B' || o.piece_color == 'W') {
+    data.forEach(o => {
 
-            var im = '<img src="img/'+ o.piece_color +'.png" class="piece">';
+        if (o.piece_color && o.piece_count > 0) {
+            const id = '#stack_' + o.row + '_' + o.col;
 
-            $(id).html(im);
+            for (let i = 0; i < o.piece_count; i++) {
+               alert(o.piece_color_bottom);
+                $(id).append(
+                    `<img src="img/${o.piece_color}.png" class="piece">`
+                );
+            }
         }
-    }
+    });
+}
+*/
+function fill_board_by_data(data) {
+
+    $('.board_stack').empty();
+
+    data.forEach(s => {
+        const id = `#stack_${s.row}_${s.col}`;
+        s.pieces.forEach(color => {
+            $(id).append(`<img src="img/${color}.png" class="piece">`);
+        });
+    });
 }
 
 function reset_board() {
 	$.ajax(
 		{method: 'post',
 		 url: "plakwto.php/board/", 
-		 success: fill_board_by_data 
+		 success: fill_board
 		}
 		);
 }
@@ -81,16 +114,20 @@ function set_user(){
 		 success: function (response) {
             console.log("OK", response);
 			$('#username_field').val('');
+			//$('#error-msg').val(response);
 			
         },
         error: function (xhr) {
             console.log(xhr.responseText);
 			$('#username_field').val('');
+			//$('#error-msg').val(response);
         }
 	 }
 		 
 		);
 }
+
+
 
 
 
