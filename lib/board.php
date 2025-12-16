@@ -18,11 +18,12 @@ function show_board() {
 SELECT b.row, b.col, s.piece_index, s.piece_color
 FROM board b
 LEFT JOIN stack s
-  ON s.row=b.row AND s.col=b.col
+ON s.row=b.row AND s.col=b.col
 ORDER BY b.row, b.col, s.piece_index
 ";
-
-$res = $mysqli->query($sql);
+$st = $mysqli->prepare($sql);
+$st->execute(); 
+$res = $st->get_result();
 
 $board = [];
 
