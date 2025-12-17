@@ -64,7 +64,7 @@ function set_user($b,$input) {
 	$st2->bind_param('sss',$username,$username,$b);
 	$st2->execute();
 
-	//update_game_status();
+	update_game_status();
 	$sql = 'select * from players where piece_color=?';
 	$st = $mysqli->prepare($sql);
 	$st->bind_param('s',$b);
