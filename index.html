@@ -19,21 +19,47 @@
 </head>
 <body>
 
-<h1>ΤΑΜΠΛΟ ΤΑΒΛΙ</h1>
-<div style="margin-left:100em;" id="game_initializer">
-<b>username:</b>
-<input type="text"  id="username_field">
-<select class="selectpicker" id="color">
-  <option value="W">W</option>
-  <option value="B">B</option>
-</select>
-<button type="button" id="btn" class='btn btn-dark btn-sm'>Enter the game</button>
+
+
+
+
+<div class="container" style="margin-left:30%"> 
+
+ <div class="row">
+  <div class="col-5">
+    <h1 class="text-center my-4">ΤΑΜΠΛΟ ΤΑΒΛΙ</h1>
+  </div>
+</div>
+  <div class="row align-items-start"> 
+    <!-- USERNAME / FORM -->
+    <div class="col-3 order-md-2">
+      <div id="game_initializer">
+        <b>username:</b><br>
+        <input type="text" id="username_field">
+        <select id="color">
+          <option value="W">W</option>
+          <option value="B">B</option>
+        </select><br>
+        <button type="button" id="btn" class="btn btn-dark btn-sm mt-2">
+          Enter the game
+        </button>
+      </div>
+    </div>
+    <!-- BOARD -->
+    <div class="col-7 order-md-1"> 
+      <div id="board"></div> 
+      <input 
+        type="submit" 
+        value="RESET BOARD" 
+        id="reset_board" 
+        class="btn btn-dark btn-lg mt-3"
+      > 
+      <div id="game_info"></div>
+    </div> 
+  </div>
+
 </div>
 
-<div id="board">
-</div>
-<br>
-<input type="submit" value="RESET BOARD" id="reset_board" class='btn btn-dark btn-lg' style="margin-left:56em;">
-<div id="game_info"></div>
+
 </body>
 </html>
