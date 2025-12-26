@@ -6,16 +6,7 @@ $dbname = "tavli";
 $dbusername=$DB_USER;
 $dbpassword=$DB_PASS;
 
-//$mysqli = new mysqli($servername, $dbusername, $dbpassword, $dbname);
 
-/// ελεγχος συνδεσης με την βαση μας
-/*
-if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Σφάλμα σύνδεσης με τη βάση δεδομένων."]);
-    exit;
-}
-*/
-// ελεγεχουμε αν η συνδεση με την βαση γινεται στο users η τοπικα
 if(gethostname()=='users.iee.ihu.gr') {
 	$mysqli = new mysqli($servername, $dbusername, $dbpassword, $dbname,null,'/home/student/iee/2019/iee2019160/mysql/run/mysql.sock');
 } else {

@@ -1,5 +1,91 @@
-h1{
-    margin-left: 35%;
+/* =========================
+   GENERAL SETUP
+   ========================= */
+h1 {
+    margin-left: 6%;
+}
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 16.66666667%; /* col-md-2 */
+    height: 100vh;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding-top: 20px;
+    z-index: 1000;
+}
+
+/* σπρώχνουμε το υπόλοιπο περιεχόμενο δεξιά */
+#main-content {
+    margin-left: 10.66666667%;
+     position: relative;
+}
+
+.dice-column {
+    text-align: center;
+     
+}
+
+#dice_area {
+    position: absolute;
+    top: 80px;
+    left: 75%;
+    transform: translateX(40px);
+    width: 240px;
+    text-align: center;
+}
+/* =========================
+   MIDDLE BAR (ΤΟ ΠΛΑΙΣΙΟ)
+   ========================= */
+
+#board {
+    /* --- ΑΛΛΑΓΗ 1: ΜΕΓΕΘΟΣ & ΣΧΗΜΑ --- */
+    /* Το vmin σημαίνει "ποσοστό της μικρότερης πλευράς της οθόνης".
+       Έτσι εξασφαλίζουμε ότι θα χωράει πάντα και θα είναι τετράγωνο. */
+    width: 75vmin;
+    height: 75vmin;
+    
+    /* --- ΑΛΛΑΓΗ 2: ΑΥΤΟΜΑΤΗ ΚΛΙΜΑΚΑ (ZOOM) --- */
+    /* Ρυθμίζουμε τη γραμματοσειρά βάσει του μεγέθους του κουτιού.
+       Όλα τα 'em' παρακάτω θα μεγαλώσουν αυτόματα βάσει αυτού. */
+    font-size: 1.1vmin; 
+
+    display: block; /* Αλλαγή σε block για να ακούει σωστά τα margins */
+    position: relative;
+    margin: 2vh auto; /* Κεντράρισμα με λίγο κενό πάνω-κάτω */
+    
+    /* Πάχος Πλαισίου (σε em για να αλλάζει μέγεθος μαζί με το ταμπλό) */
+    padding: 2em; 
+    
+    background-color: #281a14;
+    border: 0.2em solid #1a100c;
+    border-radius: 0.5em;
+    
+    box-shadow: 
+        inset 0 0 1em rgba(0,0,0,0.9),
+        0 0.5em 1em rgba(0,0,0,0.5);
+    
+    box-sizing: border-box; /* Σημαντικό για να μη χαλάει το τετράγωνο */
+}
+
+/* Η διαχωριστική μπάρα στη μέση */
+#board::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    
+    /* Αλλαγή σε em για να μεγαλώνει */
+    width: 2em; 
+    
+    background-color: #281a14;
+    z-index: 5;
+    pointer-events: none;
+    
+    /* Προσαρμογή στο padding του #board */
+    top: 1.8em;
+    bottom: 1.8em;
 }
 
 /* =========================
@@ -7,56 +93,159 @@ h1{
    ========================= */
 
 #board_table {
-    margin: 20px auto;
     border-collapse: collapse;
     background-color: rgb(98, 67, 29);
+    width: 100%;
+    height: 100%;
+    table-layout: fixed; /* Βοηθάει στη σταθερότητα */
 }
 
 /* =========================
-   STACK CELLS (2 x 12)
+   STACK CELLS (ΚΕΛΙΑ)
    ========================= */
 
 #board_table td {
-    width: 3.5em;
-    height: 18em;                 /* χώρος για 15 πούλια */
-    border: 1px solid black;
-    vertical-align: bottom;       /* τα πούλια κάθονται κάτω */
+    /* Το πλάτος μένει 4.8em (x12 στήλες + κενά = γεμίζει το πλάτος) */
+    width: 4.8em; 
+    
+    /* --- ΑΛΛΑΓΗ 3: ΥΨΟΣ ΓΙΑ ΤΕΤΡΑΓΩΝΟ --- */
+    /* Αυξήσαμε το ύψος από 15em σε 29em για να γίνει το ταμπλό τετράγωνο.
+       (Επειδή το πλάτος είναι περίπου 60em, το ύψος πρέπει να είναι 30+30=60em) */
+    height: 29em; 
+    
+    vertical-align: bottom;
     position: relative;
     padding: 0;
+    box-sizing: border-box; /* Για να μην ξεφεύγουν τα borders */
 }
+
 #board_table tr:first-child td {
     vertical-align: top;
 }
-#board_table tr:first-child img.piece {
-    margin: 0 auto -1.9em;
-}
+
 /* =========================
-   PIECES (STACKING)
+   TRIANGLES (POINTS)
+   ========================= */
+
+#board_table td::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 0;
+    height: 0;
+    
+    /* Πλάτος τριγώνου */
+    border-left: 2.4em solid transparent;   
+    border-right: 2.4em solid transparent;
+    
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* --- ΠΡΩΤΗ ΓΡΑΜΜΗ (ΠΑΝΩ) --- */
+#board_table tr:first-child td::before {
+    top: 0;
+    /* --- ΑΛΛΑΓΗ 4: ΤΕΝΤΩΜΑ ΤΡΙΓΩΝΩΝ --- */
+    /* Το τρίγωνο μεγάλωσε από 14.5em σε 29em για να φτάνει μέχρι τη μέση */
+    border-top: 29em solid; 
+}
+
+/* Χρώματα Πάνω Γραμμής */
+#board_table tr:first-child td:nth-child(odd)::before {
+    border-top-color: #ccb795; 
+}
+#board_table tr:first-child td:nth-child(even)::before {
+    border-top-color: hsl(24, 33%, 22%); 
+}
+
+/* --- ΔΕΥΤΕΡΗ ΓΡΑΜΜΗ (ΚΑΤΩ) --- */
+#board_table tr:last-child td::before {
+    bottom: 0;
+    /* --- ΑΛΛΑΓΗ 4: ΤΕΝΤΩΜΑ ΤΡΙΓΩΝΩΝ --- */
+    border-bottom: 29em solid; 
+}
+
+/* Χρώματα Κάτω Γραμμής */
+#board_table tr:last-child td:nth-child(odd)::before {
+    border-bottom-color: #4a3425; 
+}
+#board_table tr:last-child td:nth-child(even)::before {
+    border-bottom-color: #ccb795;
+}
+
+#board_table td:nth-child(n+7)::before {
+    /* Το 'left: 0' είναι η αρχική ρύθμιση.
+       Βάζουμε μια μικρή θετική τιμή για να τα σπρώξουμε δεξιά.
+       Δοκίμασε 0.6em. Αν θέλει κι άλλο, αύξησέ το (π.χ. 0.8em).
+       Αν είναι πολύ, μείωσέ το (π.χ. 0.4em).
+    */
+    left: 0.5em; 
+}
+
+
+
+/* =========================
+   PIECES (ΠΟΥΛΙΑ)
    ========================= */
 
 img.piece {
-    width: 2.8em;
-    height: 2.8em;
+    width: 2.9em;
+    height: 2.9em;
     display: block;
-    margin: -1.9em auto 0;        /* overlap για στοίβα */
-    pointer-events: none;         /* για μελλοντικό drag */
+    
+    /* Μικρή διόρθωση στο margin για να φαίνονται ωραία στη στοίβα */
+    margin: -1.9em auto 0;
+    
+    pointer-events: none;
+    position: relative;
+    z-index: 10;
+}
+
+/* Ειδική ρύθμιση για την πρώτη γραμμή για να μην "καβαλάνε" το border */
+#board_table tr:first-child img.piece {
+    margin: 0 auto -1.9em;
 }
 
 /* =========================
-   OPTIONAL: VISUAL HELPERS
+   VISUAL HELPERS & EXTRAS
    ========================= */
 
-/* hover σε στοίβα */
 #board_table td:hover {
     background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* πρώτη γραμμή (πάνω πλευρά) */
+/* Borders στα κελιά (προαιρετικά, αν θες να φαίνονται οι γραμμές) */
+/* Αν δεν τις θες, αφαίρεσε τα παρακάτω ή κάνε τα 0px */
 #board_table tr:first-child td {
-    border-bottom-width: 3px;
+    border-bottom: 2px solid rgba(0,0,0,0.1); 
+}
+#board_table tr:last-child td {
+    border-top: 2px solid rgba(0,0,0,0.1);
 }
 
-/* δεύτερη γραμμή (κάτω πλευρά) */
-#board_table tr:last-child td {
-    border-top-width: 3px;
+.die-icon {
+    font-size: 4em; /* Μεγαλώνει μαζί με το board */
+    color: #1a100c;   
+    margin: 0 0.2em;   
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.piece {
+    pointer-events: none; /* Το κλικ περνάει μέσα από την εικόνα */
+    width: 100%;          /* Προσαρμογή μεγέθους */
+    height: auto;
+}
+
+/* Σιγουρέψου ότι έχεις και αυτό για το highlight */
+.selected {
+    background-color: rgba(0, 255, 0, 0.5) !important; /* Πιο έντονο πράσινο */
+    border: 2px solid gold;
+    box-shadow: 0 0 15px yellow;
+    outline: 3px solid green;
+}
+
+.valid-target {
+    outline: 3px solid blue;
+    cursor: pointer;
 }

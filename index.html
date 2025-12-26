@@ -4,52 +4,96 @@
     <meta charset="UTF-8">
     <title>ΤΑΒΛΙ ΠΛΑΚΩΤΟ</title>
 
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap core CSS -->
-  <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
-  <link href="css/plakwto.css" rel="stylesheet">
-  <script src="bootstrap/jquery-3.2.1.min.js"></script>
-  <script src="bootstrap/bootstrap.min.js"></script>
-  <script src="js/plakwto.js"></script>
+    <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/plakwto.css" rel="stylesheet">
+
+    <script src="bootstrap/jquery-3.2.1.min.js"></script>
+    <script src="bootstrap/bootstrap.min.js"></script>
+    <script src="js/plakwto.js"></script>
 
 </head>
+
 <body>
 
+<div class="container-fluid">
 
-<div class="container" style="margin-left:30%"> 
-
- <div class="row">
-  <div class="col-5">
-    <h1 class="text-center my-4">ΤΑΜΠΛΟ ΤΑΒΛΙ</h1>
-  </div>
-</div>
-  <div class="row align-items-start"> 
-    <div class="col-3 order-md-2">
-      <div id="game_initializer">
-        <b>username:</b><br>
-        <input type="text" id="username_field">
-        <select id="color">
-          <option value="W">W</option>
-          <option value="B">B</option>
-        </select><br>
-        <button type="button" id="btn" class="btn btn-dark btn-sm mt-2">
-          Enter the game
-        </button>
-      </div>
+    <div class="row">
+        <div class="col-12">
+      <h1 class="text-center my-3">ΤΑΜΠΛΟ ΤΑΒΛΙ</h1>
     </div>
-    <div class="col-7 order-md-1"> 
-      <div id="board"></div> 
-      <input type="submit" value="RESET BOARD" id="reset_board" class="btn btn-dark btn-lg mt-3"> 
-      <div id="game_info"></div>
-    </div> 
   </div>
 
-</div>
+    <div class="row">
 
+   
+        <div id="sidebar" class="col-md-2 bg-light border-right">
+            <div id="game_initializer" class="p-3 text-center">
+                <h4>Είσοδος</h4>
+
+                <div class="form-group">
+                    <label><b>Username:</b></label>
+                    <input type="text" id="username_field" class="form-control mb-2">
+                </div>
+
+                <div class="form-group">
+                    <label><b>Χρώμα:</b></label>
+                    <select id="color" class="form-control mb-2">
+                        <option value="W">White (W)</option>
+                        <option value="B">Black (B)</option>
+                    </select>
+                </div>
+
+                <button type="button" id="btn" class="btn btn-primary btn-block">
+                    Enter the game
+                </button>
+            </div>
+
+            <div id="game_info" class="mt-3"></div>
+            <div id="move_div">your turn to play!</div>
+        </div>
+
+       
+        <div id="main-content" class="col-md-10">
+
+            <div id="board"></div>
+
+            <div class="row mt-4 justify-content-center">
+                <div class="col-auto">
+                    <input type="submit" value="RESET BOARD"
+                           id="reset_board" class="btn btn-dark btn-lg">
+                </div>
+                <div class="col-auto">
+                    <input type="submit" value="REFRESH BOARD"
+                           id="refresh_game" class="btn btn-info btn-lg">
+                </div>
+            </div>
+
+            
+            <div id="dice_area">
+                <span id="die1" class="die-icon">🎲</span>
+                <span id="die2" class="die-icon">🎲</span>
+
+                <br><br>
+
+                <button onclick="rollDice()"
+                        class="btn btn-success btn-lg">
+                    Ρίξε τα Ζάρια !!!
+                </button>
+
+                <br><br>
+
+                <div id="message_area"
+                     class="alert alert-secondary"
+                     style="font-weight:bold;">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
 </body>
 </html>

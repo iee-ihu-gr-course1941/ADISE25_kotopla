@@ -64,4 +64,71 @@ function reset_board() {
 	//echo json_encode(['status'=>'reset']);
 }
 
+function move_piece($x,$y,$x2,$y2,$token) {
+
+    $headers = getallheaders();
+    $token = $headers['App-Token'] ?? null;
+	echo ($token);
+
+    if(!$token){
+        header("HTTP/1.1 400 Bad Request");
+        echo json_encode(['errormesg'=>'No token given']);
+        exit;
+    }
+
+    // ποιος παίκτης είμαι
+    $color = current_color($token);
+    if($color == null){
+        header("HTTP/1.1 400 Bad Request");
+        echo json_encode(['errormesg'=>'You are not a player of this game']);
+        exit;
+    }
+
+    // κατάσταση παιχνιδιού
+    $status = read_status();
+
+    if($status['status'] != 'started'){
+        header("HTTP/1.1 400 Bad Request");
+        echo json_encode(['errormesg'=>'Game is not started']);
+        exit;
+    }
+
+    // έλεγχος σειράς
+    if($status['p_turn'] != $color){
+        header("HTTP/1.1 400 Bad Request");
+        echo json_encode(['errormesg'=>'It is not your turn']);
+        exit;
+    }
+
+    // όλα ΟΚ → κάνε κίνηση
+    do_move($x,$y,$x2,$y2);
+}
+
+function show_piece($x,$y) {
+	global $mysqli;
+	
+	$sql = 'select * from stack where row=? and col=?';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('ii',$x,$y);
+	$st->execute();
+	$res = $st->get_result();
+	header('Content-type: application/json');
+	print json_encode($res->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+}
+
+function do_move($x,$y,$x2,$y2) {
+	global $mysqli;
+	$sql = 'call `move_piece`(?,?,?,?);';
+	$st = $mysqli->prepare($sql);
+	$st->bind_param('iiii',$x,$y,$x2,$y2 );
+	$st->execute();
+
+	//Lecture 4 1st stage
+	show_board();
+	//Lecture 4 2nd stage
+	//header('Content-type: application/json');
+	//print json_encode(read_board(), JSON_PRETTY_PRINT);
+}
+
+
 ?>

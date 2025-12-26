@@ -17,8 +17,8 @@ switch ($r=array_shift($request)) {
             case '':
             case null: handle_board($method,$input);
                         break;
-           // case 'piece': handle_piece($method, $request[0],$request[1],$input);
-                        //break;
+           case 'piece': handle_piece($method, $request[0],$request[1],$input);
+                        break;
             }
             break;
     case 'status': 
@@ -27,6 +27,9 @@ switch ($r=array_shift($request)) {
 			break;
 	case 'players': handle_player($method, $request,$input);
 			    break;
+   case 'game': 
+          handle_game($method, $request, $input);
+          break;       
 	default:  header("HTTP/1.1 404 Not Found");
  exit;
 }
@@ -41,6 +44,14 @@ function handle_board($method,$input){
         header('HTTP/1.1 405 Method Not Allowed');
     }
     }
+
+    function handle_piece($method, $x, $y, $input) {
+    if($method=='GET') {
+        show_piece($x,$y);
+    } else if ($method=='PUT') {
+        move_piece($x,$y,$input['x'], $input['y'], $input['token']);
+    }    
+}
 
 function handle_player($method, $p, $input) {
   switch ($b=array_shift($p)) {
@@ -66,6 +77,28 @@ function handle_player($method, $p, $input) {
     header('HTTP/1.1 405 Method Not Allowed');
 		print "<h1>Method Not Allowed (405)</h1>";
 	}
+}
+
+function handle_game($method, $p, $input) {
+    switch ($b=array_shift($p)) {
+        case 'roll': 
+            if($method=='POST') {
+                // Πλέον περιμένουμε το 'color' από την JS
+                // Αν δεν υπάρχει color στο input, υποθέτουμε λάθος
+                if(isset($input['color'])) {
+                    roll_dice($input['color']); 
+                } else {
+                     header("HTTP/1.1 400 Bad Request");
+                     print json_encode(['errormesg' => "Missing player color"]);
+                }
+            } else {
+                header("HTTP/1.1 405 Method Not Allowed");
+            }
+            break;
+        default: 
+            header("HTTP/1.1 404 Not Found");
+            break;
+    }
 }
 
 ?>
