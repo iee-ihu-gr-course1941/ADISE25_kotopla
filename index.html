@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
     <meta charset="UTF-8">
     <title>ΤΑΒΛΙ ΠΛΑΚΩΤΟ</title>
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -12,87 +11,104 @@
     <script src="bootstrap/jquery-3.2.1.min.js"></script>
     <script src="bootstrap/bootstrap.min.js"></script>
     <script src="js/plakwto.js"></script>
-
 </head>
 
 <body>
 
-<div class="container-fluid">
+<div class="container-fluid h-100">
 
-    <div class="row">
-        <div class="col-12">
-      <h1 class="text-center my-3">ΤΑΜΠΛΟ ΤΑΒΛΙ</h1>
-    </div>
-  </div>
+    <div class="row h-100 align-items-center">
 
-    <div class="row">
-
-   
-        <div id="sidebar" class="col-md-2 bg-light border-right">
-            <div id="game_initializer" class="p-3 text-center">
-                <h4>Είσοδος</h4>
-
-                <div class="form-group">
-                    <label><b>Username:</b></label>
-                    <input type="text" id="username_field" class="form-control mb-2">
+        <div class="col-md-2 h-100 p-0">
+            <div id="sidebar" class="h-100 d-flex flex-column p-3">
+                
+                <div id="game_initializer" class="text-center">
+                    <h4 class="mb-3 font-weight-bold text-dark border-bottom pb-2">Game Menu</h4>
+                    <div class="form-group text-left">
+                        <label><b>Username:</b></label>
+                        <input type="text" id="username_field" class="form-control shadow-sm" placeholder="Όνομα...">
+                    </div>
+                    <div class="form-group text-left">
+                        <label><b>Χρώμα:</b></label>
+                        <select id="color" class="form-control shadow-sm">
+                            <option value="W">⚪ ΛΕΥΚΑ</option>
+                            <option value="B">⚫ ΜΑΥΡΑ</option>
+                        </select>
+                    </div>
+                    <button type="button" id="btn" class="btn btn-primary btn-block shadow font-weight-bold mt-3">
+                        Είσοδος
+                    </button>
                 </div>
 
-                <div class="form-group">
-                    <label><b>Χρώμα:</b></label>
-                    <select id="color" class="form-control mb-2">
-                        <option value="W">White (W)</option>
-                        <option value="B">Black (B)</option>
-                    </select>
+                <div id="game_info" class="mt-3 text-center"></div>
+
+                <div id="score_board" class="card mt-3 border-0 shadow-sm flex-shrink-0">
+                    <div class="card-header bg-dark text-white text-center py-1">ΣΚΟΡ</div>
+                    <div class="card-body p-2 bg-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
+                            <div class="d-flex align-items-center">
+                                <span class="avatar mr-2" style="background:#333; color:#fff;"></span>
+                                <b>Black</b>
+                            </div>
+                            <span id="score_B" class="badge badge-dark p-2">0</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <span class="avatar mr-2"></span>
+                                <b>White</b>
+                            </div>
+                            <span id="score_W" class="badge badge-secondary p-2">0</span>
+                        </div>
+                    </div>
                 </div>
 
-                <button type="button" id="btn" class="btn btn-primary btn-block">
-                    Enter the game
-                </button>
+                <div id="winner_alert" class="alert alert-success mt-3 text-center shadow p-1" style="display: none;"></div>
+                
+                <div id="move_div" class="alert alert-warning mt-3 text-center shadow-sm p-2 mb-0" role="alert">
+                    Η σειρά σου να παίξεις!
+                </div>
+
+                <div class="authors-section mt-auto pt-3 border-top text-left">
+                    <span class="font-weight-bold text-dark">Authors:</span><br>
+                    Δημήτρης Συγγιρίδης<br>
+                    Λεωνίδας Αποστολίδης<br>
+                    Στέλιος Τριανταφυλλίδης
+                </div>
+
             </div>
-
-            <div id="game_info" class="mt-3"></div>
-            <div id="move_div">your turn to play!</div>
         </div>
 
-       
-        <div id="main-content" class="col-md-10">
 
-            <div id="board"></div>
-
-            <div class="row mt-4 justify-content-center">
-                <div class="col-auto">
-                    <input type="submit" value="RESET BOARD"
-                           id="reset_board" class="btn btn-dark btn-lg">
-                </div>
-                <div class="col-auto">
-                    <input type="submit" value="REFRESH BOARD"
-                           id="refresh_game" class="btn btn-info btn-lg">
-                </div>
-            </div>
-
-            
-            <div id="dice_area">
-                <span id="die1" class="die-icon">🎲</span>
-                <span id="die2" class="die-icon">🎲</span>
-
-                <br><br>
-
-                <button onclick="rollDice()"
-                        class="btn btn-success btn-lg">
-                    Ρίξε τα Ζάρια !!!
-                </button>
-
-                <br><br>
-
-                <div id="message_area"
-                     class="alert alert-secondary"
-                     style="font-weight:bold;">
-                </div>
-            </div>
-
+        <div class="col-md-8 text-center">
+            <h1 class="game-title">ΤΑΒΛΙ • ΠΛΑΚΩΤΟ</h1>
+            <div id="board" class="shadow-lg"></div>
         </div>
-    </div>
 
+
+        <div class="col-md-2 h-100 p-0">
+            <div id="right-panel" class="h-100 d-flex flex-column justify-content-center p-3 text-center">
+                <div class="dice-panel p-3 rounded shadow mb-4">
+                    <h5 class="font-weight-bold text-dark mb-3 border-bottom pb-2">Ζάρια</h5>
+                    <div class="dice-display mb-3">
+                        <span id="die1" class="die-icon"></span>
+                        <span id="die2" class="die-icon"></span>
+                    </div>
+                    <button onclick="rollDice()" class="btn btn-success btn-lg btn-block shadow pulse-btn font-weight-bold">
+                        ΡΙΞΕ!
+                    </button>
+                    <div id="message_area" class="alert alert-light mt-3 mb-0 shadow-sm small p-2" style="font-weight:bold;">
+                       Καλή επιτυχία!
+                    </div>
+                </div>
+                <div class="controls-panel">
+                    <input type="submit" value="ΕΠΑΝΕΚΚΙΝΗΣΗ" id="reset_board" class="btn btn-dark btn-block mb-2 shadow">
+                    <input type="submit" value="ΠΑΡΑΙΤΗΣΗ" id="resign" class="btn btn-danger btn-block mb-2 shadow">
+                    <input type="submit" value="ΑΝΑΝΕΩΣΗ ΤΑΜΠΛΟΥ" id="refresh_game" class="btn btn-info btn-block shadow text-white">
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 </body>

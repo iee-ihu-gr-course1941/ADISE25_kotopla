@@ -53,17 +53,47 @@ INSERT INTO `board` (`row`, `col`) VALUES
 	(2, 11),
 	(2, 12);
 
+-- Dumping structure for procedure tavli.change_turn
+DELIMITER //
+CREATE PROCEDURE `change_turn`()
+BEGIN
+    DECLARE cur_turn CHAR(1);
+
+    START TRANSACTION;
+
+    SELECT p_turn INTO cur_turn
+    FROM game_status
+    LIMIT 1
+    FOR UPDATE;
+
+    UPDATE game_status
+    SET
+        p_turn = IF(cur_turn='W','B','W'),
+        move_1 = NULL,
+        move_2 = NULL,
+        move_3 = NULL,
+        move_4 = NULL;
+
+    COMMIT;
+END//
+DELIMITER ;
+
 -- Dumping structure for πίνακας tavli.game_status
 CREATE TABLE IF NOT EXISTS `game_status` (
   `status` enum('not active','initialized','started','ended','aborded') NOT NULL DEFAULT 'not active',
   `p_turn` enum('W','B') DEFAULT NULL,
-  `result` enum('B','W') DEFAULT NULL,
-  `last_change` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `last_change` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `move_1` int(11) DEFAULT NULL,
+  `move_2` int(11) DEFAULT NULL,
+  `move_3` int(11) DEFAULT NULL,
+  `move_4` int(11) DEFAULT NULL,
+  `score_w` tinyint(4) DEFAULT 0,
+  `score_b` tinyint(4) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Dumping data for table tavli.game_status: ~1 rows (approximately)
-INSERT INTO `game_status` (`status`, `p_turn`, `result`, `last_change`) VALUES
-	('started', 'W', NULL, '2025-12-17 16:08:23');
+INSERT INTO `game_status` (`status`, `p_turn`, `last_change`, `move_1`, `move_2`, `move_3`, `move_4`, `score_w`, `score_b`) VALUES
+	('not active', NULL, '2025-12-31 17:40:23', NULL, NULL, NULL, NULL, 0, 0);
 
 -- Dumping structure for procedure tavli.move_piece
 DELIMITER //
@@ -77,62 +107,97 @@ BEGIN
     DECLARE old_index INT;
     DECLARE new_index INT;
     DECLARE color CHAR(1);
-	 DECLARE dst_color CHAR(1);
-	 DECLARE dst_count INT;
-	  DECLARE top_index INT;
+    DECLARE dst_color CHAR(1);
+    DECLARE dst_count INT;
+    
+    DECLARE pos_from INT;
+    DECLARE pos_to INT;
+    DECLARE move_diff INT; 
+    DECLARE move_dist INT;
+    DECLARE used_die_slot INT DEFAULT 0; 
+    DECLARE pieces_behind INT DEFAULT 0;
+    
+    DECLARE p_turn_now CHAR(1);
+    DECLARE m1 INT; DECLARE m2 INT; DECLARE m3 INT; DECLARE m4 INT;
+
     START TRANSACTION;
 
-    SELECT piece_index, piece_color
-    INTO old_index, color
-    FROM stack
-    WHERE row=r1 AND col=c1
-    ORDER BY piece_index DESC
-    LIMIT 1
-    FOR UPDATE;
-    
-   SELECT piece_color
-	INTO  dst_color
-	FROM stack
-	WHERE row=r2 AND col=c2
-	ORDER BY piece_index DESC
-	LIMIT 1
-	FOR UPDATE;
-	
-	SELECT COUNT(*)
-	INTO dst_count
-	FROM stack
-	WHERE row=r2 AND col=c2;
+    SELECT p_turn, move_1, move_2, move_3, move_4
+    INTO p_turn_now, m1, m2, m3, m4
+    FROM game_status LIMIT 1 FOR UPDATE;
 
-    IF old_index IS NULL THEN
-        ROLLBACK;
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT='No piece at source';
+    SELECT piece_index, piece_color INTO old_index, color
+    FROM stack WHERE row=r1 AND col=c1 ORDER BY piece_index DESC LIMIT 1 FOR UPDATE;
 
-    END IF;
+    IF old_index IS NULL THEN ROLLBACK; SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='No piece at source'; END IF;
+    IF color != p_turn_now THEN ROLLBACK; SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Not your turn'; END IF;
 
-	 IF ((r1 >0) AND (r1 <=2)) AND ((r2 >0) AND (r2 <=2))  THEN
-     IF (dst_count >= 2 AND color != dst_color) THEN
-     SIGNAL SQLSTATE '45000'
-     SET MESSAGE_TEXT = 'Illegal move plakwma';
+    -- === ΜΑΖΕΜΑ (BEARING OFF) ===
+    IF r2 = 0 AND c2 = 0 THEN
+        SET move_dist = 13 - c1;
+
+        -- Έλεγχος Ακριβούς Ζαριάς
+        IF m1 = move_dist THEN SET used_die_slot = 1;
+        ELSEIF m2 = move_dist THEN SET used_die_slot = 2;
+        ELSEIF m3 = move_dist THEN SET used_die_slot = 3;
+        ELSEIF m4 = move_dist THEN SET used_die_slot = 4;
+        END IF;
+
+        -- Έλεγχος Μεγαλύτερης Ζαριάς (αν δεν υπάρχει πούλι πίσω)
+        IF used_die_slot = 0 THEN
+            SELECT COUNT(*) INTO pieces_behind FROM stack 
+            WHERE row=r1 AND col >= 7 AND col < c1 AND piece_color=color;
+
+            IF pieces_behind = 0 THEN
+                IF m1 > move_dist THEN SET used_die_slot = 1;
+                ELSEIF m2 > move_dist THEN SET used_die_slot = 2;
+                ELSEIF m3 > move_dist THEN SET used_die_slot = 3;
+                ELSEIF m4 > move_dist THEN SET used_die_slot = 4;
+                END IF;
+            END IF;
+        END IF;
+
+        IF used_die_slot = 0 THEN ROLLBACK; SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Invalid Die for Bearing Off'; END IF;
+
+        DELETE FROM stack WHERE row=r1 AND col=c1 AND piece_index=old_index;
+
+    -- === ΚΑΝΟΝΙΚΗ ΚΙΝΗΣΗ ===
     ELSE
-      SELECT COALESCE(MAX(piece_index),0)+1
-    INTO new_index
-    FROM stack
-    WHERE row=r2 AND col=c2
-    FOR UPDATE;
-    
-    UPDATE stack
-    SET row=r2, col=c2, piece_index=new_index
-    WHERE row=r1 AND col=c1 AND piece_index=old_index;
+        SET pos_from = CASE WHEN r1=1 THEN (13 - c1) ELSE (12 + c1) END;
+        SET pos_to = CASE WHEN r2=1 THEN (13 - c2) ELSE (12 + c2) END;
+        SET move_dist = ABS(pos_to - pos_from); 
+
+        IF m1 = move_dist THEN SET used_die_slot = 1;
+        ELSEIF m2 = move_dist THEN SET used_die_slot = 2;
+        ELSEIF m3 = move_dist THEN SET used_die_slot = 3;
+        ELSEIF m4 = move_dist THEN SET used_die_slot = 4;
+        ELSE ROLLBACK; SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='No matching die'; END IF;
+
+        SELECT piece_color INTO dst_color FROM stack WHERE row=r2 AND col=c2 ORDER BY piece_index DESC LIMIT 1;
+        SELECT COUNT(*) INTO dst_count FROM stack WHERE row=r2 AND col=c2;
+
+        IF (dst_count >= 2 AND color != dst_color) THEN ROLLBACK; SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Blocked'; END IF;
+
+        SELECT COALESCE(MAX(piece_index),0)+1 INTO new_index FROM stack WHERE row=r2 AND col=c2;
+        UPDATE stack SET row=r2, col=c2, piece_index=new_index WHERE row=r1 AND col=c1 AND piece_index=old_index;
     END IF;
-    ELSE 
-     SIGNAL SQLSTATE '45000'
-     SET MESSAGE_TEXT = 'Illegal move this stack doesnt exist';
-   END IF;
+
+    -- === ΚΑΨΙΜΟ ΖΑΡΙΟΥ & ΑΛΛΑΓΗ ΣΕΙΡΑΣ ===
+    IF used_die_slot = 1 THEN UPDATE game_status SET move_1 = NULL;
+    ELSEIF used_die_slot = 2 THEN UPDATE game_status SET move_2 = NULL;
+    ELSEIF used_die_slot = 3 THEN UPDATE game_status SET move_3 = NULL;
+    ELSEIF used_die_slot = 4 THEN UPDATE game_status SET move_4 = NULL;
+    END IF;
+
+    UPDATE players SET last_action = NOW() WHERE username IS NOT NULL;
+
+    SELECT move_1, move_2, move_3, move_4 INTO m1, m2, m3, m4 FROM game_status;
+    IF m1 IS NULL AND m2 IS NULL AND m3 IS NULL AND m4 IS NULL THEN
+        UPDATE game_status SET p_turn = IF(p_turn_now = 'W', 'B', 'W');
+    END IF;
 
     COMMIT;
-
-    END//
+END//
 DELIMITER ;
 
 -- Dumping structure for πίνακας tavli.players
@@ -146,8 +211,8 @@ CREATE TABLE IF NOT EXISTS `players` (
 
 -- Dumping data for table tavli.players: ~2 rows (approximately)
 INSERT INTO `players` (`username`, `piece_color`, `token`, `last_action`) VALUES
-	('leo', 'B', 'f9c3634252c60a6960683066b6b928f6', '2025-12-17 16:07:13'),
-	('siggi', 'W', 'd1d0fcc04834cd5198e55b91b47126b2', '2025-12-17 16:06:55');
+	(NULL, 'B', NULL, NULL),
+	(NULL, 'W', NULL, NULL);
 
 -- Dumping structure for procedure tavli.reset_game
 DELIMITER //
@@ -169,6 +234,49 @@ BEGIN
     (2,12,8,'W'), (2,12,9,'W'), (2,12,10,'W'),
     (2,12,11,'W'), (2,12,12,'W'), (2,12,13,'W'), (2,12,14,'W'), (2,12,15,'W');
 
+    UPDATE players
+    SET username= NULL,
+    token= NULL,
+    last_action= NULL;
+
+
+    UPDATE game_status
+    SET   move_1= NULL,
+    move_2= NULL,
+    move_3= NULL,
+    move_4= NULL;
+    
+    COMMIT;
+END//
+DELIMITER ;
+
+-- Dumping structure for procedure tavli.restart_game
+DELIMITER //
+CREATE PROCEDURE `restart_game`()
+BEGIN
+    START TRANSACTION;
+
+    DELETE FROM stack;
+
+    -- Αρχική θέση (ΠΑΡΑΔΕΙΓΜΑ)
+    INSERT INTO stack VALUES
+    (1,12,1,'B'), (1,12,2,'B'),
+    (1,12,3,'B'), (1,12,4,'B'), (1,12,5,'B'), (1,12,6,'B'), (1,12,7,'B'),
+    (1,12,8,'B'), (1,12,9,'B'), (1,12,10,'B'),
+    (1,12,11,'B'), (1,12,12,'B'), (1,12,13,'B'), (1,12,14,'B'), (1,12,15,'B'),
+
+    (2,12,1,'W'), (2,12,2,'W'),
+    (2,12,3,'W'), (2,12,4,'W'), (2,12,5,'W'), (2,12,6,'W'), (2,12,7,'W'),
+    (2,12,8,'W'), (2,12,9,'W'), (2,12,10,'W'),
+    (2,12,11,'W'), (2,12,12,'W'), (2,12,13,'W'), (2,12,14,'W'), (2,12,15,'W');
+
+
+    UPDATE game_status
+    SET   move_1= NULL,
+    move_2= NULL,
+    move_3= NULL,
+    move_4= NULL;
+    
     COMMIT;
 END//
 DELIMITER ;
@@ -216,25 +324,6 @@ INSERT INTO `stack` (`row`, `col`, `piece_index`, `piece_color`) VALUES
 	(2, 12, 14, 'W'),
 	(2, 12, 15, 'W');
 
--- Dumping structure for πίνακας tavli.users
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user` varchar(25) NOT NULL,
-  `password` char(255) NOT NULL,
-  `reg_date` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user` (`user`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Dumping data for table tavli.users: ~7 rows (approximately)
-INSERT INTO `users` (`id`, `user`, `password`, `reg_date`) VALUES
-	(1, 'dimitris_sigiridis', 'siggi123', '2025-11-23 16:15:29'),
-	(2, 'dimitris_siggi', '$2y$10$m8blWVPgVn3a01hguVer2u8b71ttScBIaSfTS/VCQ0iqs5e0TFB5u', '2025-11-23 16:24:54'),
-	(19, 'leo', '$2y$10$i6jbdvFmrpeY7r8iZE8n9uyQbPu74zxzwkLecyOol07dSBCJa3oUm', '2025-11-23 17:47:15'),
-	(35, 'siggi', '$2y$10$HBtqj18NPtFN4/lPWLNGqefMqlk2kj5jjiSRaitNPTIYgKihnD.pa', '2025-11-23 18:50:41'),
-	(36, 'blue label', '$2y$10$X5seHJfgIlZfTlJjTPTlU.LrvmibAqUVwX53UQyYffXNitCJuWw4y', '2025-11-23 19:36:08'),
-	(37, 'turbox', '$2y$10$E8U7auFk1uqJp/e6.5HDT.NBJyaiotwn.dG5fIdvEX.gYcesGCWJC', '2025-11-25 18:05:26'),
-	(43, 'lioste', '$2y$10$PiZiilS7MqFo5XS6i6Sfx.kJYCq0OJ8agF16/q00qyyKXK4W9J79O', '2025-12-06 03:51:54');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

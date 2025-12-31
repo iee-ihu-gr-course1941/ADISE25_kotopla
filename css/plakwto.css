@@ -1,251 +1,283 @@
-/* =========================
-   GENERAL SETUP
-   ========================= */
-h1 {
-    margin-left: 6%;
-}
-#sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 16.66666667%; /* col-md-2 */
-    height: 100vh;
-    overflow-y: auto;
-    background: #f8f9fa;
-    padding-top: 20px;
-    z-index: 1000;
+/* Ρυθμίσεις ύψους και scroll για όλη τη σελίδα */
+body, html {
+    height: 100%;
+    overflow-x: hidden;
 }
 
-/* σπρώχνουμε το υπόλοιπο περιεχόμενο δεξιά */
-#main-content {
-    margin-left: 10.66666667%;
-     position: relative;
+/* Διπλότυπο rule για ασφάλεια στο ύψος */
+body, html {
+    height: 100%;
+    overflow-x: hidden;
 }
 
-.dice-column {
-    text-align: center;
-     
+/* Βασικές ρυθμίσεις σελίδας (φόντο, γραμματοσειρά) */
+body {
+    background: url('../img/backround.png') repeat fixed;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-#dice_area {
-    position: absolute;
-    top: 80px;
-    left: 75%;
-    transform: translateX(40px);
-    width: 240px;
-    text-align: center;
+/* Στυλ τίτλου παιχνιδιού (χρώμα, σκιά, μέγεθος) */
+h1.game-title {
+    color: #3e2723;
+    text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.9), 
+        0 0 20px rgba(255, 255, 255, 0.7);
+    font-weight: 900;
+    font-size: 3rem;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
 }
-/* =========================
-   MIDDLE BAR (ΤΟ ΠΛΑΙΣΙΟ)
-   ========================= */
 
+/* Στυλ πλευρικών πλαισίων (sidebar & δεξί panel) */
+#sidebar, #right-panel {
+    background: rgba(255, 255, 255, 0.85); 
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    backdrop-filter: blur(5px);
+}
+
+/* Container πληροφοριών παίκτη (flexbox) */
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+/* Στυλ εικόνας προφίλ (avatar) */
+.player-avatar {
+    width: 32px;
+    height: 32px;
+    background: #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Στυλ ονόματος παίκτη */
+.player-name {
+    font-weight: bold;
+}
+
+/* Κουτάκι ένδειξης χρώματος παίκτη */
+.player-color {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #333;
+}
+
+/* Χρώμα για τον λευκό παίκτη */
+.player-color.white {
+    background: white;
+}
+
+/* Χρώμα για τον μαύρο παίκτη */
+.player-color.black {
+    background: black;
+}
+
+/* Πλαίσιο που περιέχει τα ζάρια */
+.dice-panel {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+/* Εικονίδιο ζαριού (γραμματοσειρά) */
+.die-icon {
+    font-size: 3.5rem;
+    line-height: 1;
+    display: inline-block;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));
+}
+
+/* Κεντρικό πλαίσιο του ταμπλό (διαστάσεις, περιθώρια, σκιές) */
 #board {
-    /* --- ΑΛΛΑΓΗ 1: ΜΕΓΕΘΟΣ & ΣΧΗΜΑ --- */
-    /* Το vmin σημαίνει "ποσοστό της μικρότερης πλευράς της οθόνης".
-       Έτσι εξασφαλίζουμε ότι θα χωράει πάντα και θα είναι τετράγωνο. */
     width: 75vmin;
     height: 75vmin;
-    
-    /* --- ΑΛΛΑΓΗ 2: ΑΥΤΟΜΑΤΗ ΚΛΙΜΑΚΑ (ZOOM) --- */
-    /* Ρυθμίζουμε τη γραμματοσειρά βάσει του μεγέθους του κουτιού.
-       Όλα τα 'em' παρακάτω θα μεγαλώσουν αυτόματα βάσει αυτού. */
     font-size: 1.1vmin; 
-
-    display: block; /* Αλλαγή σε block για να ακούει σωστά τα margins */
+    display: block;
     position: relative;
-    margin: 2vh auto; /* Κεντράρισμα με λίγο κενό πάνω-κάτω */
-    
-    /* Πάχος Πλαισίου (σε em για να αλλάζει μέγεθος μαζί με το ταμπλό) */
+    margin: 2vh auto;
     padding: 2em; 
-    
     background-color: #281a14;
     border: 0.2em solid #1a100c;
     border-radius: 0.5em;
-    
     box-shadow: 
         inset 0 0 1em rgba(0,0,0,0.9),
         0 0.5em 1em rgba(0,0,0,0.5);
-    
-    box-sizing: border-box; /* Σημαντικό για να μη χαλάει το τετράγωνο */
+    box-sizing: border-box;
 }
 
-/* Η διαχωριστική μπάρα στη μέση */
+/* Η κεντρική διαχωριστική μπάρα του ταμπλό */
 #board::after {
     content: "";
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    
-    /* Αλλαγή σε em για να μεγαλώνει */
     width: 2em; 
-    
     background-color: #281a14;
     z-index: 5;
     pointer-events: none;
-    
-    /* Προσαρμογή στο padding του #board */
     top: 1.8em;
     bottom: 1.8em;
 }
 
-/* =========================
-   BOARD TABLE
-   ========================= */
-
+/* Ο πίνακας που δομεί το ταμπλό */
 #board_table {
     border-collapse: collapse;
     background-color: rgb(98, 67, 29);
     width: 100%;
     height: 100%;
-    table-layout: fixed; /* Βοηθάει στη σταθερότητα */
+    table-layout: fixed;
 }
 
-/* =========================
-   STACK CELLS (ΚΕΛΙΑ)
-   ========================= */
-
+/* Κελιά (στήλες) του πίνακα */
 #board_table td {
-    /* Το πλάτος μένει 4.8em (x12 στήλες + κενά = γεμίζει το πλάτος) */
     width: 4.8em; 
-    
-    /* --- ΑΛΛΑΓΗ 3: ΥΨΟΣ ΓΙΑ ΤΕΤΡΑΓΩΝΟ --- */
-    /* Αυξήσαμε το ύψος από 15em σε 29em για να γίνει το ταμπλό τετράγωνο.
-       (Επειδή το πλάτος είναι περίπου 60em, το ύψος πρέπει να είναι 30+30=60em) */
     height: 29em; 
-    
     vertical-align: bottom;
     position: relative;
     padding: 0;
-    box-sizing: border-box; /* Για να μην ξεφεύγουν τα borders */
+    box-sizing: border-box;
 }
 
+/* Στοίχιση κελιών πάνω σειράς */
 #board_table tr:first-child td {
     vertical-align: top;
 }
 
-/* =========================
-   TRIANGLES (POINTS)
-   ========================= */
-
+/* Τα τρίγωνα (points) του ταμπλό */
 #board_table td::before {
     content: "";
     position: absolute;
     left: 0;
     width: 0;
     height: 0;
-    
-    /* Πλάτος τριγώνου */
     border-left: 2.4em solid transparent;   
     border-right: 2.4em solid transparent;
-    
     z-index: 0;
     pointer-events: none;
 }
 
-/* --- ΠΡΩΤΗ ΓΡΑΜΜΗ (ΠΑΝΩ) --- */
+/* Τρίγωνα πάνω σειράς */
 #board_table tr:first-child td::before {
     top: 0;
-    /* --- ΑΛΛΑΓΗ 4: ΤΕΝΤΩΜΑ ΤΡΙΓΩΝΩΝ --- */
-    /* Το τρίγωνο μεγάλωσε από 14.5em σε 29em για να φτάνει μέχρι τη μέση */
     border-top: 29em solid; 
 }
 
-/* Χρώματα Πάνω Γραμμής */
+/* Χρωματισμός τριγώνων πάνω σειράς (μονά) */
 #board_table tr:first-child td:nth-child(odd)::before {
     border-top-color: #ccb795; 
 }
+
+/* Χρωματισμός τριγώνων πάνω σειράς (ζυγά) */
 #board_table tr:first-child td:nth-child(even)::before {
     border-top-color: hsl(24, 33%, 22%); 
 }
 
-/* --- ΔΕΥΤΕΡΗ ΓΡΑΜΜΗ (ΚΑΤΩ) --- */
+/* Τρίγωνα κάτω σειράς */
 #board_table tr:last-child td::before {
     bottom: 0;
-    /* --- ΑΛΛΑΓΗ 4: ΤΕΝΤΩΜΑ ΤΡΙΓΩΝΩΝ --- */
     border-bottom: 29em solid; 
 }
 
-/* Χρώματα Κάτω Γραμμής */
+/* Χρωματισμός τριγώνων κάτω σειράς (μονά) */
 #board_table tr:last-child td:nth-child(odd)::before {
     border-bottom-color: #4a3425; 
 }
+
+/* Χρωματισμός τριγώνων κάτω σειράς (ζυγά) */
 #board_table tr:last-child td:nth-child(even)::before {
     border-bottom-color: #ccb795;
 }
 
+/* Διόρθωση θέσης για τα δεξιά τρίγωνα (μετά την μπάρα) */
 #board_table td:nth-child(n+7)::before {
-    /* Το 'left: 0' είναι η αρχική ρύθμιση.
-       Βάζουμε μια μικρή θετική τιμή για να τα σπρώξουμε δεξιά.
-       Δοκίμασε 0.6em. Αν θέλει κι άλλο, αύξησέ το (π.χ. 0.8em).
-       Αν είναι πολύ, μείωσέ το (π.χ. 0.4em).
-    */
     left: 0.5em; 
 }
 
-
-
-/* =========================
-   PIECES (ΠΟΥΛΙΑ)
-   ========================= */
-
+/* Στυλ για τα πούλια (εικόνες) */
 img.piece {
     width: 2.9em;
     height: 2.9em;
     display: block;
-    
-    /* Μικρή διόρθωση στο margin για να φαίνονται ωραία στη στοίβα */
     margin: -1.9em auto 0;
-    
     pointer-events: none;
     position: relative;
     z-index: 10;
+    user-select: none;         
+    -webkit-user-select: none; 
+    -moz-user-select: none;    
+    -ms-user-select: none;  
 }
 
-/* Ειδική ρύθμιση για την πρώτη γραμμή για να μην "καβαλάνε" το border */
+/* Διόρθωση περιθωρίου πουλιών πάνω σειράς */
 #board_table tr:first-child img.piece {
     margin: 0 auto -1.9em;
 }
 
-/* =========================
-   VISUAL HELPERS & EXTRAS
-   ========================= */
-
+/* Εφέ hover στα κελιά */
 #board_table td:hover {
     background-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Borders στα κελιά (προαιρετικά, αν θες να φαίνονται οι γραμμές) */
-/* Αν δεν τις θες, αφαίρεσε τα παρακάτω ή κάνε τα 0px */
+/* Περιγράμματα (borders) κελιών πάνω σειράς */
 #board_table tr:first-child td {
     border-bottom: 2px solid rgba(0,0,0,0.1); 
 }
+
+/* Περιγράμματα (borders) κελιών κάτω σειράς */
 #board_table tr:last-child td {
     border-top: 2px solid rgba(0,0,0,0.1);
 }
 
+/* Μέγεθος και στοίχιση εικονιδίου ζαριού */
 .die-icon {
-    font-size: 4em; /* Μεγαλώνει μαζί με το board */
+    font-size: 4em;
     color: #1a100c;   
     margin: 0 0.2em;   
     line-height: 1;
     vertical-align: middle;
 }
 
+/* Ρυθμίσεις αλληλεπίδρασης class piece (click-through) */
 .piece {
-    pointer-events: none; /* Το κλικ περνάει μέσα από την εικόνα */
-    width: 100%;          /* Προσαρμογή μεγέθους */
+    pointer-events: none;
+    width: 100%;
     height: auto;
 }
 
-/* Σιγουρέψου ότι έχεις και αυτό για το highlight */
+/* Επισήμανση επιλεγμένου πουλιού (πράσινο) */
 .selected {
-    background-color: rgba(0, 255, 0, 0.5) !important; /* Πιο έντονο πράσινο */
+    background-color: rgba(0, 255, 0, 0.5) !important;
     border: 2px solid gold;
     box-shadow: 0 0 15px yellow;
     outline: 3px solid green;
 }
 
+/* Επισήμανση έγκυρου στόχου (μπλε περίγραμμα) */
 .valid-target {
     outline: 3px solid blue;
     cursor: pointer;
+}
+
+/* Επισήμανση για μάζεμα (κόκκινη λάμψη) */
+.valid-bear-off {
+    box-shadow: 0 0 15px 5px red !important;
+    cursor: pointer;
+}
+
+/* Πλαίσιο πληροφοριών παιχνιδιού (status message) */
+#game_info {
+    color: #000000 !important;
+    font-size: 1.1rem;
+    font-weight: 800;
+    line-height: 1.5;
+    text-shadow: none;
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    border-radius: 8px;
 }
