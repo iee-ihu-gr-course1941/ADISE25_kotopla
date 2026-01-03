@@ -10,7 +10,7 @@ $dbpassword=$DB_PASS;
 
 
 if(gethostname()=='users.iee.ihu.gr') {
-	$mysqli = new mysqli($servername, $dbusername, $dbpassword, $dbname,null,'/home/student/iee/2019/iee2019007/mysql/run/mysql.sock');
+	$mysqli = new mysqli($servername, $dbusername, $dbpassword, $dbname,null,'/home/student/iee/2019/iee2019160/mysql/run/mysql.sock');
 } else {
 		//$pass=null;
     $mysqli = new mysqli($servername, $dbusername, $dbpassword, $dbname);

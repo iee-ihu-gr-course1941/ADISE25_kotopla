@@ -1,3 +1,4 @@
+
 var me = {}; // Αποθηκεύει πληροφορίες τρέχοντος παίκτη (username, token, χρώμα)
 var game_status = {}; // Αποθηκεύει την τρέχουσα κατάσταση παιχνιδιού από τον server
 var board = {}; // Τοπική αναπαράσταση του ταμπλό
@@ -307,7 +308,8 @@ function attemptMove(from, to, dieUsed) {
           game_status_update();
         } else {
           if (!checkRemainingMoves()) {
-            game_status_update_manual();
+            setTimeout(function () {
+            game_status_update_manual();},800);
             diceValues = [];
             if (!gameEnded) {
               setTimeout(function () {
