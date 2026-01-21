@@ -101,7 +101,7 @@ function roll_dice($pid) {
     global $mysqli;
 
     // 1. Έλεγχοι εγκυρότητας (Σειρά & αν έχει ήδη ρίξει)
-    $sql = "SELECT p_turn, move_1 FROM game_status LIMIT 1";
+    $sql = "SELECT p_turn, move_1, move_2, move_3, move_4 FROM game_status LIMIT 1";
     $st = $mysqli->prepare($sql);
     $st->execute();
     $res = $st->get_result();
@@ -113,7 +113,7 @@ function roll_dice($pid) {
         exit;
     }
 
-    if ($row['move_1'] != null) {
+    if ($row['move_1'] != null || $row['move_2'] != null || $row['move_3'] != null || $row['move_4'] != null) {
         header("HTTP/1.1 400 Bad Request");
         print json_encode(['errormesg' => "Έχεις ήδη ρίξει ζάρια!"]);
         exit;
