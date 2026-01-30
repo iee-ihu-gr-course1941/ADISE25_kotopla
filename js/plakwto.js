@@ -692,6 +692,7 @@ $(function () {
 
 // Επεξεργάζεται τις ενημερώσεις κατάστασης από τον server
 function update_status(data) {
+  if(game_status.p_turn != me.piece_color){fill_board();}
   const new_status = data[0];
   const old_status = game_status || {};
 
